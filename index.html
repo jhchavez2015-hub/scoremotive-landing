@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScoreMotive — Know your score. Own your future.</title>
+<meta name="description" content="Free bilingual tools to analyze your FICO score, accelerate debt payoff, and build lasting credit — in English and Spanish.">
+<meta property="og:title" content="ScoreMotive — Know your score. Own your future.">
+<meta property="og:description" content="Free bilingual tools to analyze your FICO score, accelerate debt payoff, and build lasting credit.">
+<meta property="og:url" content="https://scoremotive.com">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080b12;
+    --bg2: #0d1220;
+    --bg3: #111827;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #f0f2f7;
+    --muted: #8892a4;
+    --accent: #4f7cff;
+    --accent2: #7c3aed;
+    --accent3: #06d6a0;
+    --amber: #f59e0b;
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NOISE TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* GRADIENT ORBS */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(79,124,255,0.12) 0%, transparent 70%); top: -200px; left: -100px; }
+  .orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(124,58,237,0.1) 0%, transparent 70%); top: 200px; right: -150px; }
+  .orb-3 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(6,214,160,0.08) 0%, transparent 70%); bottom: 0; left: 30%; }
+
+  /* LAYOUT */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+  /* HEADER */
+  header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 16px 0;
+    background: rgba(8,11,18,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo-icon svg { width: 18px; height: 18px; fill: white; }
+
+  .logo-text {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+
+  .header-badge {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--amber);
+    background: rgba(245,158,11,0.1);
+    border: 1px solid rgba(245,158,11,0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 160px 0 100px;
+    text-align: center;
+  }
+
+  .launch-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(79,124,255,0.08);
+    border: 1px solid rgba(79,124,255,0.2);
+    border-radius: 30px;
+    padding: 6px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #7ba7ff;
+    margin-bottom: 32px;
+    animation: fadeUp 0.6s ease-out both;
+  }
+
+  .launch-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent3);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(42px, 7vw, 76px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    margin-bottom: 12px;
+    animation: fadeUp 0.6s ease-out 0.1s both;
+  }
+
+  .h1-line1 { color: var(--text); display: block; }
+  .h1-line2 {
+    display: block;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .h1-es {
+    font-family: var(--font-display);
+    font-size: clamp(16px, 2.5vw, 22px);
+    font-weight: 400;
+    color: var(--muted);
+    letter-spacing: -0.3px;
+    margin-bottom: 32px;
+    animation: fadeUp 0.6s ease-out 0.2s both;
+  }
+
+  .hero-sub {
+    font-size: clamp(15px, 2vw, 18px);
+    color: var(--muted);
+    max-width: 580px;
+    margin: 0 auto 48px;
+    line-height: 1.7;
+    font-weight: 300;
+    animation: fadeUp 0.6s ease-out 0.3s both;
+  }
+
+  /* EMAIL FORM */
+  .email-form {
+    display: flex;
+    gap: 12px;
+    max-width: 480px;
+    margin: 0 auto 24px;
+    animation: fadeUp 0.6s ease-out 0.4s both;
+  }
+
+  .email-input {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .email-input::placeholder { color: var(--muted); }
+  .email-input:focus { border-color: var(--accent); background: rgba(79,124,255,0.05); }
+
+  .cta-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 24px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+
+  .cta-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .cta-btn:active { transform: translateY(0); }
+
+  .form-note {
+    font-size: 12px;
+    color: var(--muted);
+    animation: fadeUp 0.6s ease-out 0.5s both;
+  }
+
+  .form-success {
+    display: none;
+    background: rgba(6,214,160,0.08);
+    border: 1px solid rgba(6,214,160,0.2);
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 14px;
+    color: var(--accent3);
+    max-width: 480px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  /* COUNTDOWN */
+  .countdown-wrap {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin: 64px 0 80px;
+    animation: fadeUp 0.6s ease-out 0.6s both;
+  }
+
+  .countdown-item {
+    text-align: center;
+    min-width: 72px;
+  }
+
+  .countdown-num {
+    font-family: var(--font-display);
+    font-size: 42px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+    letter-spacing: -2px;
+    display: block;
+  }
+
+  .countdown-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-top: 6px;
+    display: block;
+  }
+
+  .countdown-sep {
+    font-family: var(--font-display);
+    font-size: 42px;
+    font-weight: 800;
+    color: var(--border2);
+    line-height: 1;
+    align-self: flex-start;
+    padding-top: 2px;
+  }
+
+  /* FEATURES */
+  .features {
+    padding: 40px 0 100px;
+  }
+
+  .section-label {
+    text-align: center;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--muted);
+    margin-bottom: 48px;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .feature-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    transition: border-color 0.3s, transform 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(79,124,255,0.4), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .feature-card:hover { border-color: var(--border2); transform: translateY(-3px); }
+  .feature-card:hover::before { opacity: 1; }
+
+  .feature-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 20px;
+  }
+
+  .icon-blue { background: rgba(79,124,255,0.12); }
+  .icon-purple { background: rgba(124,58,237,0.12); }
+  .icon-green { background: rgba(6,214,160,0.12); }
+
+  .feature-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 10px;
+    letter-spacing: -0.3px;
+  }
+
+  .feature-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .feature-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-top: 16px;
+  }
+
+  .tag-blue { background: rgba(79,124,255,0.1); color: #7ba7ff; }
+  .tag-purple { background: rgba(124,58,237,0.1); color: #a78bfa; }
+  .tag-green { background: rgba(6,214,160,0.1); color: var(--accent3); }
+
+  /* SCORE PREVIEW */
+  .preview-section {
+    padding: 40px 0 100px;
+  }
+
+  .preview-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 48px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+
+  @media (max-width: 768px) {
+    .preview-card { grid-template-columns: 1fr; padding: 32px; }
+    .email-form { flex-direction: column; }
+    .cta-btn { width: 100%; }
+  }
+
+  .preview-text h2 {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+
+  .preview-text p {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.7;
+    font-weight: 300;
+    margin-bottom: 24px;
+  }
+
+  .score-visual {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .score-bar-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .score-bar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .score-bar-label { font-size: 12px; color: var(--muted); font-weight: 400; }
+  .score-bar-value { font-size: 12px; font-weight: 500; }
+
+  .score-bar-track {
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    animation: growBar 1.2s ease-out both;
+  }
+
+  @keyframes growBar {
+    from { width: 0; }
+  }
+
+  .bar-blue { background: linear-gradient(90deg, var(--accent), #7ba7ff); }
+  .bar-green { background: linear-gradient(90deg, var(--accent3), #34d399); }
+  .bar-amber { background: linear-gradient(90deg, var(--amber), #fcd34d); }
+  .bar-purple { background: linear-gradient(90deg, var(--accent2), #a78bfa); }
+  .bar-red { background: linear-gradient(90deg, #f43f5e, #fb7185); }
+
+  .score-display {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .score-pill {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .score-pill-num {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    display: block;
+  }
+
+  .score-pill-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .num-blue { color: var(--accent); }
+  .num-green { color: var(--accent3); }
+
+  /* SOCIAL PROOF */
+  .social-section {
+    padding: 0 0 100px;
+    text-align: center;
+  }
+
+  .social-links {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 32px;
+  }
+
+  .social-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 20px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .social-link:hover { border-color: var(--border2); color: var(--text); }
+  .social-link svg { width: 16px; height: 16px; fill: currentColor; }
+
+  /* DISCLAIMER */
+  .disclaimer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0;
+    text-align: center;
+  }
+
+  .disclaimer-inner {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .disclaimer-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(245,158,11,0.06);
+    border: 1px solid rgba(245,158,11,0.15);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 11px;
+    color: #d4a017;
+    margin-bottom: 12px;
+  }
+
+  .disclaimer p {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.7;
+    opacity: 0.7;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 0;
+  }
+
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .footer-copy { font-size: 12px; color: var(--muted); }
+
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { font-size: 12px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--text); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in { animation: fadeUp 0.6s ease-out both; }
+
+  /* BILINGUAL TOGGLE */
+  .lang-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 48px;
+    animation: fadeUp 0.6s ease-out 0.7s both;
+  }
+
+  .lang-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px 14px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .lang-btn.active {
+    background: rgba(79,124,255,0.1);
+    border-color: rgba(79,124,255,0.3);
+    color: #7ba7ff;
+  }
+
+  /* WAITLIST COUNT */
+  .waitlist-count {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    animation: fadeUp 0.6s ease-out 0.45s both;
+  }
+
+  .waitlist-avatars {
+    display: flex;
+  }
+
+  .waitlist-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+    margin-left: -6px;
+    font-size: 9px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+
+  .av1 { background: var(--accent); }
+  .av2 { background: var(--accent2); }
+  .av3 { background: var(--accent3); color: #063; }
+  .av4 { background: var(--amber); color: #7a3f00; }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <a href="#" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <span class="logo-text">ScoreMotive</span>
+    </a>
+    <span class="header-badge">⚡ Coming Soon</span>
+  </div>
+</header>
+
+<!-- HERO -->
+<main>
+  <section class="hero">
+    <div class="container">
+
+      <div class="launch-pill">
+        <span class="launch-dot"></span>
+        Early Access Opening Soon
+      </div>
+
+      <h1>
+        <span class="h1-line1">Know your score.</span>
+        <span class="h1-line2">Own your future.</span>
+      </h1>
+
+      <p class="h1-es">Entiende tu crédito. Domina tu futuro.</p>
+
+      <p class="hero-sub">
+        Free bilingual tools to analyze your FICO score, accelerate debt payoff, and build lasting credit — in English and Spanish.
+      </p>
+
+      <!-- EMAIL CAPTURE -->
+      <div class="email-form" id="emailForm">
+        <input type="email" class="email-input" id="emailInput" placeholder="Enter your email address" />
+        <button class="cta-btn" onclick="submitEmail()">Notify Me</button>
+      </div>
+
+      <div class="form-success" id="formSuccess">
+        ✓ You're on the list! We'll notify you the moment we launch.
+      </div>
+
+      <div class="waitlist-count">
+        <div class="waitlist-avatars">
+          <div class="waitlist-avatar av1">JR</div>
+          <div class="waitlist-avatar av2">ML</div>
+          <div class="waitlist-avatar av3">SP</div>
+          <div class="waitlist-avatar av4">AC</div>
+        </div>
+        <span>Join people already on the waitlist</span>
+      </div>
+
+      <p class="form-note">No spam. No credit card. Free forever on launch.</p>
+
+      <!-- COUNTDOWN -->
+      <div class="countdown-wrap">
+        <div class="countdown-item">
+          <span class="countdown-num" id="days">00</span>
+          <span class="countdown-label">Days</span>
+        </div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-item">
+          <span class="countdown-num" id="hours">00</span>
+          <span class="countdown-label">Hours</span>
+        </div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-item">
+          <span class="countdown-num" id="minutes">00</span>
+          <span class="countdown-label">Minutes</span>
+        </div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-item">
+          <span class="countdown-num" id="seconds">00</span>
+          <span class="countdown-label">Seconds</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features">
+    <div class="container">
+      <p class="section-label">What's coming</p>
+      <div class="features-grid">
+
+        <div class="feature-card">
+          <div class="feature-icon icon-blue">📊</div>
+          <h3 class="feature-title">Dual FICO Analyzer</h3>
+          <p class="feature-desc">Compare your Traditional FICO 8/9 vs FICO 10 T (Trended Data) simultaneously. Understand exactly how lenders see you — and what moves the needle most.</p>
+          <span class="feature-tag tag-blue">FICO 8 · FICO 9 · FICO 10T</span>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon icon-green">💳</div>
+          <h3 class="feature-title">Debt Accelerator</h3>
+          <p class="feature-desc">Avalanche strategy powered by real amortization math. See exactly how much interest you save and how many months you cut by making one extra payment.</p>
+          <span class="feature-tag tag-green">Avalanche · Lump-sum · Projection</span>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon icon-purple">🌐</div>
+          <h3 class="feature-title">Fully Bilingual</h3>
+          <p class="feature-desc">Every feature available in English and Spanish. Built specifically for the American market — all communities, one platform.</p>
+          <span class="feature-tag tag-purple">English · Español</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SCORE PREVIEW -->
+  <section class="preview-section">
+    <div class="container">
+      <div class="preview-card">
+
+        <div class="preview-text">
+          <h2>See both models side by side</h2>
+          <p>Most people only check one score. ScoreMotive shows you the full picture — how banks using traditional FICO compare to lenders using trended data models. The difference can mean a better rate on your next loan.</p>
+          <div class="score-display">
+            <div class="score-pill">
+              <span class="score-pill-num num-blue">734</span>
+              <span class="score-pill-label">FICO 8/9</span>
+            </div>
+            <div class="score-pill">
+              <span class="score-pill-num num-green">718</span>
+              <span class="score-pill-label">FICO 10 T</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="score-visual">
+          <div class="score-bar-item">
+            <div class="score-bar-header">
+              <span class="score-bar-label">Payment History</span>
+              <span class="score-bar-value" style="color:#7ba7ff">192 / 193 pts</span>
+            </div>
+            <div class="score-bar-track">
+              <div class="score-bar-fill bar-blue" style="width:99%"></div>
+            </div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-header">
+              <span class="score-bar-label">Credit Utilization</span>
+              <span class="score-bar-value" style="color:#06d6a0">132 / 165 pts</span>
+            </div>
+            <div class="score-bar-track">
+              <div class="score-bar-fill bar-green" style="width:80%"></div>
+            </div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-header">
+              <span class="score-bar-label">Length of History</span>
+              <span class="score-bar-value" style="color:#f59e0b">58 / 83 pts</span>
+            </div>
+            <div class="score-bar-track">
+              <div class="score-bar-fill bar-amber" style="width:70%"></div>
+            </div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-header">
+              <span class="score-bar-label">Credit Mix</span>
+              <span class="score-bar-value" style="color:#a78bfa">55 / 55 pts</span>
+            </div>
+            <div class="score-bar-track">
+              <div class="score-bar-fill bar-purple" style="width:100%"></div>
+            </div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-header">
+              <span class="score-bar-label">New Credit (Inquiries)</span>
+              <span class="score-bar-value" style="color:#fb7185">39 / 55 pts</span>
+            </div>
+            <div class="score-bar-track">
+              <div class="score-bar-fill bar-red" style="width:70%"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SOCIAL -->
+  <section class="social-section">
+    <div class="container">
+      <p class="section-label">Follow the launch</p>
+      <div class="social-links">
+        <a href="https://instagram.com/scoremotive" target="_blank" class="social-link">
+          <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          @scoremotive
+        </a>
+        <a href="https://x.com/scoremotive" target="_blank" class="social-link">
+          <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          @scoremotive
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- DISCLAIMER -->
+  <div class="disclaimer">
+    <div class="container">
+      <div class="disclaimer-inner">
+        <div class="disclaimer-badge">⚠️ Educational Tool</div>
+        <p>ScoreMotive is an educational and informational tool. It does not constitute professional financial, legal, or tax advice. FICO score results are estimates based on simplified models and may not reflect your actual credit standing. Always consult a Certified Financial Planner (CFP) or accredited credit counselor before making financial decisions. This site may receive compensation through affiliate links.</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <span class="footer-copy">© 2025 ScoreMotive · Educational use only</span>
+      <div class="footer-links">
+        <a href="mailto:hola@scoremotive.com">Contact</a>
+        <a href="#disclaimer">Disclaimer</a>
+        <a href="#privacy">Privacy</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // COUNTDOWN — target date 45 days from now
+  const launch = new Date();
+  launch.setDate(launch.getDate() + 45);
+
+  function updateCountdown() {
+    const now = new Date();
+    const diff = launch - now;
+    if (diff <= 0) return;
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    document.getElementById('days').textContent = String(d).padStart(2, '0');
+    document.getElementById('hours').textContent = String(h).padStart(2, '0');
+    document.getElementById('minutes').textContent = String(m).padStart(2, '0');
+    document.getElementById('seconds').textContent = String(s).padStart(2, '0');
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  // EMAIL SUBMIT
+  function submitEmail() {
+    const input = document.getElementById('emailInput');
+    const email = input.value.trim();
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!re.test(email)) {
+      input.style.borderColor = '#f43f5e';
+      input.focus();
+      return;
+    }
+    document.getElementById('emailForm').style.display = 'none';
+    document.getElementById('formSuccess').style.display = 'block';
+  }
+
+  document.getElementById('emailInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') submitEmail();
+    this.style.borderColor = '';
+  });
+
+  // SCROLL ANIMATIONS
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.animation = 'fadeUp 0.6s ease-out both';
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.feature-card, .preview-card').forEach(el => {
+    el.style.opacity = '0';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
