@@ -700,14 +700,9 @@
         Free bilingual tools to analyze your FICO score, accelerate debt payoff, and build lasting credit — in English and Spanish.
       </p>
 
-      <!-- EMAIL CAPTURE -->
-      <div class="email-form" id="emailForm">
-        <input type="email" class="email-input" id="emailInput" placeholder="Enter your email address" />
-        <button class="cta-btn" onclick="submitEmail()">Notify Me</button>
-      </div>
-
-      <div class="form-success" id="formSuccess">
-        ✓ You're on the list! We'll notify you the moment we launch.
+      <!-- BEEHIIV EMAIL CAPTURE -->
+      <div style="max-width:480px; margin: 0 auto 16px;">
+        <script async src="https://subscribe-forms.beehiiv.com/v3/loader.js" data-beehiiv-form="e2bb8abe-fda9-4576-a646-7ae69ed1ab11"></script>
       </div>
 
       <div class="waitlist-count">
@@ -916,24 +911,7 @@
   updateCountdown();
   setInterval(updateCountdown, 1000);
 
-  // EMAIL SUBMIT
-  function submitEmail() {
-    const input = document.getElementById('emailInput');
-    const email = input.value.trim();
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!re.test(email)) {
-      input.style.borderColor = '#f43f5e';
-      input.focus();
-      return;
-    }
-    document.getElementById('emailForm').style.display = 'none';
-    document.getElementById('formSuccess').style.display = 'block';
-  }
 
-  document.getElementById('emailInput').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') submitEmail();
-    this.style.borderColor = '';
-  });
 
   // SCROLL ANIMATIONS
   const observer = new IntersectionObserver((entries) => {
